@@ -12,5 +12,7 @@ http://rickitan.github.io/angularWorldCupPool/
 To run it locally:
 
 1) bower install
+
 2) grunt serve
+
 3) Go to: http://localhost:9000/
