@@ -3,7 +3,7 @@
     <!--<button ng-click="toggleView()"> Toggle</button>-->
 </div>
 <!-- GROUP's PHASE  -->
-<div class="row" ng-show="!showSecondPhase">
+<div class="row">
     <div class="col-sm-4" ng-repeat="(group, groupData) in groupsMatches">
         <h1 style="text-align: center">Grupo {{group}}</h1>
         <div ng-repeat="match in groupData.matches" style="display: inline-block; padding: 5px; width: 154px; height: 53px; margin-left: {{$index%2 * 23}}px; border-left: {{$index%2}}px solid #cdd0d4;">
@@ -15,15 +15,24 @@
 
 </div>
 
+
 <!-- SECOND PHASE  -->
-<div style="position: relative; margin-top:20px; height: 560px" ng-show="!showSecondPhase">
+<div style="position: relative; margin-top:20px; height: 560px">
 
     <div ng-repeat="(title, match) in secondStageMatches.roundOf16" ng-class="($index < 4) ? 'roundOf16Left' : 'roundOf16Right'" style="top:{{($index < 4) ? 150 * $index : 150*($index - 4)}}px">
-        <input type="text" style="width:20px; height:21px; position: absolute; margin-left: 5px; margin-top: 8px" ng-model="match[0].score">
-        <img ng-src="/images/country_flags/{{match[0].country}}.png" width="50" height="43" style="display:block; margin-left:20px; margin-top:6px">
-        <span style="position: absolute; top: 37px; left: 37px; text-align: center">vs</span>
-        <img ng-src="/images/country_flags/{{match[1].country}}.png" style="display:block; margin-left:20px; margin-top:12px" width="50" height="43">
-        <input type="text" style="width:20px; height:21px; position: absolute; margin-left: 5px; margin-top: -41px" ng-model="match[1].score">
+        <div class="matchRow">
+            <input type="text" class="inputScore" ng-model="match[0].score">
+            <img ng-src="/images/country_flags/{{match[0].country}}.png" width="50" height="43">
+            <div class="radioContainer"><input ng-show="match[0].score == match[1].score" type="radio" ng-checked="true" name="{{title}}" ng-click="victorByPenalties('roundOf16', title, 0)" ></div>
+        </div>
+        <div class="vsDiv">
+            <span>vs</span>
+        </div>
+        <div class="matchRow">
+            <input type="text" class="inputScore" ng-model="match[1].score">
+            <img ng-src="/images/country_flags/{{match[1].country}}.png" width="50" height="43">
+            <div class="radioContainer"><input ng-show="match[0].score == match[1].score" type="radio" name="{{title}}" ng-click="victorByPenalties('roundOf16', title, 1)" ></div>
+        </div>
     </div>
 
 
@@ -32,11 +41,13 @@
         <div style="float: {{($index < 2) ? 'right' : 'left'}}">
             <input type="text" style="width:20px; height:21px;" ng-model="match[0].score">
             <img ng-src="/images/country_flags/{{match[0].country}}.png" width="50" height="43" style="display:inline-block; margin-top:6px">
+            <div class="radioContainer"><input ng-show="match[0].score == match[1].score" type="radio" ng-checked="true" name="{{title}}" ng-click="victorByPenalties('quarterFinals', title, 0)" ></div>
         </div>
         <div style="float: {{($index < 2) ? 'right' : 'left'}}; clear:both; margin-top:19px">vs</div>
         <div style="float: {{($index < 2) ? 'right' : 'left'}}; clear:both; margin-top:23px">
             <input type="text" style="width:20px; height:21px;" ng-model="match[1].score">
             <img ng-src="/images/country_flags/{{match[1].country}}.png" width="50" height="43" style="display:inline-block; margin-top:6px">
+            <div class="radioContainer"><input ng-show="match[0].score == match[1].score" type="radio" name="{{title}}" ng-click="victorByPenalties('quarterFinals', title, 1)" ></div>
         </div>
     </div>
 
@@ -46,23 +57,30 @@
         <div style="float: {{($index < 1) ? 'right' : 'left'}}">
             <input type="text" style="width:20px; height:21px;" ng-model="match[0].score">
             <img ng-src="/images/country_flags/{{match[0].country}}.png" width="50" height="43" style="display:inline-block; margin-top:6px">
+            <div class="radioContainer"><input ng-show="match[0].score == match[1].score" type="radio" ng-checked="true" name="{{title}}" ng-click="victorByPenalties('semiFinals', title, 0)" ></div>
+
         </div>
         <div style="float: {{($index < 1) ? 'right' : 'left'}}; clear:both; margin-top:91px">vs</div>
         <div style="float: {{($index < 1) ? 'right' : 'left'}}; clear:both; margin-top:100px">
             <input type="text" style="width:20px; height:21px;" ng-model="match[1].score">
             <img ng-src="/images/country_flags/{{match[1].country}}.png" width="50" height="43" style="display:inline-block; margin-top:6px">
+            <div class="radioContainer"><input ng-show="match[0].score == match[1].score" type="radio" name="{{title}}" ng-click="victorByPenalties('semiFinals', title, 1)" ></div>
+
         </div>
     </div>
 
 
     <div style="top: 250px; width:450px; height:50px; border:1px solid grey; position:absolute; z-index:1; background-color:white">
-        <input type="text" style="width:20px; height:21px; position: absolute; margin-left: 381px; margin-top: 13px" ng-model="secondStageMatches.final.ABCDEFGH[0].score">
-        <img ng-src="/images/country_flags/{{secondStageMatches.final.ABCDEFGH[0].country}}.png" width="50" height="43" style=" margin-left:400px; margin-top:10px">
+        <input type="text" style="width:20px; height:21px; position: absolute; margin-left: 370px; margin-top: 13px" ng-model="secondStageMatches.final.ABCDEFGH[0].score">
+        <img ng-src="/images/country_flags/{{secondStageMatches.final.ABCDEFGH[0].country}}.png" width="50" height="43" style=" margin-left:387px; margin-top:10px">
+        <div style="width:20px; height:21px; position: absolute; margin-left: -3px; margin-top: 12px; display: inline-block"><input ng-show="match[0].score == match[1].score" type="radio" name="{{title}}" ng-click="victorByPenalties('final', 'ABCDEFGH', 0)" ></div>
+
     </div>
 
     <div style="top: 250px; right:0px; width:450px; height:50px; border:1px solid grey; position:absolute; z-index:1; background-color:white">
-        <input type="text" style="width:20px; height:21px; position: absolute; margin-left: 49px; margin-top: 13px" ng-model="secondStageMatches.final.ABCDEFGH[1].score">
-        <img ng-src="/images/country_flags/{{secondStageMatches.final.ABCDEFGH[1].country}}.png" width="50" height="43" style="margin-right:400px; margin-top:10px">
+        <div style="width:20px; height:21px; position: absolute; margin-left: 2px; margin-top: 12px; display: inline-block"><input ng-show="match[0].score == match[1].score" type="radio" name="{{title}}" ng-click="victorByPenalties('final', 'ABCDEFGH', 1)" ></div>
+        <img ng-src="/images/country_flags/{{secondStageMatches.final.ABCDEFGH[1].country}}.png" width="50" height="43" style=" margin-left:11px; margin-top:10px">
+        <input type="text" style="width:20px; height:21px; position: absolute; margin-left: -3px; margin-top: 13px" ng-model="secondStageMatches.final.ABCDEFGH[1].score">
 
     </div>
 </div>

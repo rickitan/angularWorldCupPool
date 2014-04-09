@@ -2,10 +2,7 @@ node_modules
 dist
 .tmp
 .sass-cache
-<<<<<<< HEAD
 app/bower_components
-=======
->>>>>>> gh-pages
 test
 .bowerrc
 .editorconfig

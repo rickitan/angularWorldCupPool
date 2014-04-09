@@ -3,11 +3,6 @@
 angular.module('quinielaApp')
   .controller('MainCtrl', function ($scope) {
 
-    $scope.showSecondPhase = false;
-    $scope.toggleView = function(){
-        $scope.showSecondPhase = !$scope.showSecondPhase;
-    }
-
 
     $scope.groupsMatches = {
         A: { matches:[
@@ -132,8 +127,6 @@ angular.module('quinielaApp')
         }
     };
 
-    //$scope.$watchCollection("[groupsMatches.A.matches, groupsMatches.B.matches, groupsMatches.C.matches, groupsMatches.D.matches, groupsMatches.E.matches, groupsMatches.F.matches, groupsMatches.H.matches]", function(newVal){
-    //groupsMatches.C.matches groupsMatches.D.matches groupsMatches.E.matches groupsMatches.F.matches groupsMatches.H.matches
     $scope.$watch("groupsMatches.A.matches ", function(newVal){
         calculateStandings();
     }, true);
@@ -173,7 +166,7 @@ angular.module('quinielaApp')
                 }
             })
         })
-        $scope.countriesThatPass();
+        countriesThatPass();
     }
 
     function clearPoints(){
@@ -185,12 +178,9 @@ angular.module('quinielaApp')
         })
     }
 
-    $scope.countriesThatPass = function(){
+    function countriesThatPass(){
         _.each($scope.groupsMatches, function(groupData, group){
             var countriesOrderedByPoints = _.sortBy(_.pairs(groupData.standing), function(pair){ return -pair[1]});
-            if(group == "F"){
-                console.log(countriesOrderedByPoints[0][0]);
-            }
             $scope.standing[group][0]["country"] = countriesOrderedByPoints[0][0];
             $scope.standing[group][1]["country"] = countriesOrderedByPoints[1][0];
         })
@@ -204,11 +194,29 @@ angular.module('quinielaApp')
         $scope.secondStageMatches.roundOf16.H = [_.clone($scope.standing.H[0]), _.clone($scope.standing.G[1])];
     }
 
+    $scope.standing = { //Countries that pass the first round
+        A: [{country: "", score:0, victorByPenalties:true}, {country: "", score:0, victorByPenalties:false}],
+        B: [{country: "", score:0, victorByPenalties:true}, {country: "", score:0, victorByPenalties:false}],
+        C: [{country: "", score:0, victorByPenalties:true}, {country: "", score:0, victorByPenalties:false}],
+        D: [{country: "", score:0, victorByPenalties:true}, {country: "", score:0, victorByPenalties:false}],
+        E: [{country: "", score:0, victorByPenalties:true}, {country: "", score:0, victorByPenalties:false}],
+        F: [{country: "", score:0, victorByPenalties:true}, {country: "", score:0, victorByPenalties:false}],
+        G: [{country: "", score:0, victorByPenalties:true}, {country: "", score:0, victorByPenalties:false}],
+        H: [{country: "", score:0, victorByPenalties:true}, {country: "", score:0, victorByPenalties:false}]
+    };
+
     $scope.$watch("secondStageMatches.roundOf16", function(newVal){ //Calculate who passes to quarter finals
         var matchHolder = [];
         var concaTitle = "";
         _.each($scope.secondStageMatches.roundOf16, function(match, title){
-            match[0].score > match[1].score ? matchHolder.push(_.clone(match[0])) : matchHolder.push(_.clone(match[1]));
+            if(match[0].score > match[1].score){
+                matchHolder.push(_.clone(match[0]));
+            }else if(match[0].score < match[1].score){
+                matchHolder.push(_.clone(match[1]));
+            }else{
+                _.each(match, function(country){ country.victorByPenalties ? matchHolder.push(_.clone(country)) : null });
+            }
+
             concaTitle += title;
             if(matchHolder.length === 2){
                 $scope.secondStageMatches.quarterFinals[concaTitle][0]["country"] = matchHolder[0]["country"];
@@ -223,7 +231,13 @@ angular.module('quinielaApp')
         var matchHolder = [];
         var concaTitle = "";
         _.each($scope.secondStageMatches.quarterFinals, function(match, title){
-            match[0].score > match[1].score ? matchHolder.push(_.clone(match[0])) : matchHolder.push(_.clone(match[1]));
+            if(match[0].score > match[1].score){
+                matchHolder.push(_.clone(match[0]));
+            }else if(match[0].score < match[1].score){
+                matchHolder.push(_.clone(match[1]));
+            }else{
+                _.each(match, function(country){ country.victorByPenalties ? matchHolder.push(_.clone(country)) : null });
+            }
             concaTitle += title;
             if(matchHolder.length === 2){
                 $scope.secondStageMatches.semiFinals[concaTitle][0]["country"] = matchHolder[0]["country"];
@@ -238,7 +252,13 @@ angular.module('quinielaApp')
         var matchHolder = [];
         var concaTitle = "";
         _.each($scope.secondStageMatches.semiFinals, function(match, title){
-            match[0].score > match[1].score ? matchHolder.push(_.clone(match[0])) : matchHolder.push(_.clone(match[1]));
+            if(match[0].score > match[1].score){
+                matchHolder.push(_.clone(match[0]));
+            }else if(match[0].score < match[1].score){
+                matchHolder.push(_.clone(match[1]));
+            }else{
+                _.each(match, function(country){ country.victorByPenalties ? matchHolder.push(_.clone(country)) : null });
+            }
             concaTitle += title;
             if(matchHolder.length === 2){
 
@@ -251,41 +271,37 @@ angular.module('quinielaApp')
     }, true);
 
 
-    $scope.standing = { //Countries that pass the first round
-        A: [{country: "brazil", score:0}, {country: "mexico", score:0}],
-        B: [{country: "brazil", score:0}, {country: "mexico", score:0}],
-        C: [{country: "brazil", score:0}, {country: "mexico", score:0}],
-        D: [{country: "brazil", score:0}, {country: "mexico", score:0}],
-        E: [{country: "brazil", score:0}, {country: "mexico", score:0}],
-        F: [{country: "brazil", score:0}, {country: "mexico", score:0}],
-        G: [{country: "brazil", score:0}, {country: "mexico", score:0}],
-        H: [{country: "brazil", score:0}, {country: "mexico", score:0}]
-    };
+    $scope.victorByPenalties = function(round, title, winnerIndex){
+        _.each($scope.secondStageMatches[round][title], function(country, index){
+            country.victorByPenalties = (winnerIndex == index) ? true : false;
+        })
+        console.log($scope.secondStageMatches[round][title]);
+    }
 
 
     $scope.secondStageMatches = {
         "roundOf16":{
-            A: [{country: "", score:0}, {country: "", score:0}],
-            B: [{country: "", score:0}, {country: "", score:0}],
-            C: [{country: "", score:0}, {country: "", score:0}],
-            D: [{country: "", score:0}, {country: "", score:0}],
-            E: [{country: "", score:0}, {country: "", score:0}],
-            F: [{country: "", score:0}, {country: "", score:0}],
-            G: [{country: "", score:0}, {country: "", score:0}],
-            H: [{country: "", score:0}, {country: "", score:0}]
+            A: [{country: "", score:0, victorByPenalties:true}, {country: "", score:0, victorByPenalties:false}],
+            B: [{country: "", score:0, victorByPenalties:true}, {country: "", score:0, victorByPenalties:false}],
+            C: [{country: "", score:0, victorByPenalties:true}, {country: "", score:0, victorByPenalties:false}],
+            D: [{country: "", score:0, victorByPenalties:true}, {country: "", score:0, victorByPenalties:false}],
+            E: [{country: "", score:0, victorByPenalties:true}, {country: "", score:0, victorByPenalties:false}],
+            F: [{country: "", score:0, victorByPenalties:true}, {country: "", score:0, victorByPenalties:false}],
+            G: [{country: "", score:0, victorByPenalties:true}, {country: "", score:0, victorByPenalties:false}],
+            H: [{country: "", score:0, victorByPenalties:true}, {country: "", score:0, victorByPenalties:false}]
         },
         "quarterFinals":{
-            AB: [{country: "brazil", score:0}, {country: "mexico", score:0}],
-            CD: [{country: "brazil", score:0}, {country: "mexico", score:0}],
-            EF: [{country: "brazil", score:0}, {country: "mexico", score:0}],
-            GH: [{country: "brazil", score:0}, {country: "mexico", score:0}]
+            AB: [{country: "brazil", score:0, victorByPenalties:true}, {country: "mexico", score:0, victorByPenalties:false}],
+            CD: [{country: "brazil", score:0, victorByPenalties:true}, {country: "mexico", score:0, victorByPenalties:false}],
+            EF: [{country: "brazil", score:0, victorByPenalties:true}, {country: "mexico", score:0, victorByPenalties:false}],
+            GH: [{country: "brazil", score:0, victorByPenalties:true}, {country: "mexico", score:0, victorByPenalties:false}]
         },
         "semiFinals":{
-            ABCD: [{country: "brazil", score:0}, {country: "mexico", score:0}],
-            EFGH: [{country: "brazil", score:0}, {country: "mexico", score:0}]
+            ABCD: [{country: "brazil", score:0, victorByPenalties:true}, {country: "mexico", score:0, victorByPenalties:false}],
+            EFGH: [{country: "brazil", score:0, victorByPenalties:true}, {country: "mexico", score:0, victorByPenalties:false}]
         },
         "final":{
-            ABCDEFGH: [{country: "brazil", score:0}, {country: "mexico", score:0}]
+            ABCDEFGH: [{country: "brazil", score:0, victorByPenalties:true}, {country: "mexico", score:0, victorByPenalties:false}]
         }
     };
 

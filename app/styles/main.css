@@ -81,8 +81,50 @@ body {
 
 /*Quiniela Styling*/
 
+.matchRow{
+    height:30%;
+    padding-left: 3px;
+    padding-right: 3px
+}
+
+.matchRow > .inputScore{
+    width:20px;
+    height:21px;
+    float:left;
+    margin-top: 7%
+}
+
+.radioContainer{
+    display: inline-block; !important
+    float: right;
+    padding-top: 7%;
+    width: 12px;
+    height: 13px
+}
+
+.matchRow > img{
+    padding-top: 6%;
+    margin-left: 5px
+}
+
+.vsDiv{
+    height: 35%
+}
+
+.roundOf16Left > .vsDiv > span{
+    position: absolute;
+    top:38px;
+    right:2px
+}
+
+.roundOf16Right > .vsDiv > span{
+    position: absolute;
+    top:38px;
+    left:2px
+}
+
 .roundOf16Left{
-    width:90px;
+    width:100px;
     height:100px;
     border:1px solid grey;
     position:absolute;
@@ -90,8 +132,9 @@ body {
     background-color:white
 }
 
+
 .roundOf16Right{
-    width:90px;
+    width:100px;
     height:100px;
     border:1px solid grey;
     position:absolute;
@@ -99,6 +142,8 @@ body {
     background-color:white;
     right:0px;
 }
+
+
 
 .quarterFinalsLeft{
     width:200px;
